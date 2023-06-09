@@ -3,18 +3,18 @@ const express = require("express");
 const route = express.Router();
 
 // - - - - - Controller - - - - -
-const singer_controller = require("../controllers/singer_controller");
+const singers = require("../controllers/singers");
 
 // - - - - - Routes and requests - - - - -
-route.get("/", singer_controller.getActives);
-route.get("/:id", singer_controller.getSingerById);
-route.get("/albums/:id", singer_controller.getSingerAlbums);
-route.get("/songs/:id", singer_controller.getSingerSongs);
+route.get("/", singers.getActives);
+route.get("/:id", singers.getSingerById);
+route.get("/albums/:id", singers.getSingerAlbums);
+route.get("/songs/:id", singers.getSingerSongs);
 
-route.post("/", singer_controller.addSong);
+route.post("/", singers.addSong);
 
-route.put("/:id", singer_controller.updateSinger);
+route.put("/:id", singers.updateSinger);
 
-route.delete("/:id", singer_controller.deactivateSinger);
+route.delete("/:id", singers.deactivateSinger);
 
 module.exports = route;

@@ -4,9 +4,9 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 
 // - - - - - Route objects - - - - -
-const singer_route = require("./routes/singer_route");
-const album_route = require("./routes/album_route");
-const song_route = require("./routes/song_route");
+const singers = require("./routes/singers");
+const albums = require("./routes/albums");
+const songs = require("./routes/songs");
 
 // - - - - - Express app object - - - - -
 const app = express();
@@ -17,16 +17,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("tiny"));
 
 // - - - - - Routes and requests - - - - -
-app.use("/singer", singer_route);
-app.use("/album", album_route);
-app.use("/song", song_route);
-
-// - - - - - Port listening - - - - -
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`API RUNNING - Listening on port ${PORT}`));
+app.use("/singers", singers);
+app.use("/albums", albums);
+app.use("/songs", songs);
 
 // - - - - - Database connection - - - - -
-mongoose.connect('mongodb://127.0.0.1/demo')
+mongoose.connect('mongodb://127.0.0.1/library_music')
         .then(()=> console.log('Conectado a MongoDB'))
         .catch(err => console.log('No se pudo conectar con MongoDB', err));
 const port = process.env.PORT || 3000;
