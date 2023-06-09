@@ -1,15 +1,18 @@
-const  express = require ('express');
-const {getAll, deleteSong,newSong, updateSong} = require("../controllers/songs");
-const {validateSongExist} = require("../validations/songsMD");
-const {validateAlbumExist} = require("../validations/albumsMD");
-const {addSongAlbum} = require("../controllers/albums");
-const  router = express.Router();
+// - - - - - Required modules - - - - -
+const express = require("express");
+const route = express.Router();
 
+// - - - - - Controller - - - - -
+const song_controller = require("../controllers/song_controller");
 
+// - - - - - Routes and requests - - - - -
+route.get("/", song_controller.getActives);
+route.get("/:id", song_controller.getSongById);
 
-router.get("/",getAll);
-router.post("/",newSong);
-router.put("/:id_song",validateSongExist,updateSong);
-router.delete("/:id_song",validateSongExist,deleteSong);
+route.post("/", song_controller.addSong);
 
-module.exports = router;
+route.put("/:id", song_controller.updateSong);
+
+route.delete("/:id", song_controller.deactivateSong);
+
+module.exports = route;

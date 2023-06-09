@@ -1,18 +1,20 @@
+// - - - - - Required modules - - - - -
 const express = require("express");
-const router = express.Router();
-const singersController = require("../controllers/singers");
-const {validateSingerExist} = require("../validations/singersMD");
-const {validateAlbumExist} = require("../validations/albumsMD");
+const route = express.Router();
 
+// - - - - - Controller - - - - -
+const singer_controller = require("../controllers/singer_controller");
 
-router.get("/", singersController.getAll);
-router.post("/",singersController.newSinger);
-router.put("/:id_singer",validateSingerExist,singersController.updateSinger);
-router.delete("/:id_singer",validateSingerExist,singersController.deleteSinger);
+// - - - - - Routes and requests - - - - -
+route.get("/", singer_controller.getActives);
+route.get("/:id", singer_controller.getSingerById);
+route.get("/albums/:id", singer_controller.getSingerAlbums);
+route.get("/songs/:id", singer_controller.getSingerSongs);
 
-router.post("/addAlbum/",validateSingerExist,validateAlbumExist,singersController.addAlbumSinger);
-router.get("/getAlbums/:id_singer",validateSingerExist,singersController.getAlbums);
-router.put("/deleteAlbum/:id_singer",validateSingerExist,singersController.deleteAlbumSinger);
+route.post("/", singer_controller.addSong);
 
+route.put("/:id", singer_controller.updateSinger);
 
-module.exports = router;
+route.delete("/:id", singer_controller.deactivateSinger);
+
+module.exports = route;

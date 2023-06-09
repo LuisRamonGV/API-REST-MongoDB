@@ -1,72 +1,108 @@
-const Song = require('../models/song');
-const {songsValidator} = require("../validations/songsMD");
+// - - - - - Required modules - - - - -
+const Joi = require("joi");
 
+// - - - - - Model import - - - - -
+const song_model = require("../models/song_model");
+const album_model = require("../models/album_model");
 
-async function getAll(req, res) {
-    const songs = await Song.find({state: true});
-    res.status(200).json(songs)
+// - - - - - Controller - - - - -
+const song_controller = () => {};
+
+// - - - - - Controller actions - - - - -
+song_controller.addSong = (req, res) => {
+  const { value, error } = validateSong(req.body);
+
+  if (!error) {
+    album_model
+      .getAlbumById(value._id_album)
+      .then((album) => {
+        let result = song_model.addSong(value);
+
+        result
+          .then((song) => {
+            res.status(202).json({ song: song, album: album });
+          })
+          .catch((err) => {
+            res.status(400).json({ error: err });
+          });
+      })
+      .catch((err) => {
+        res.status(400).json({ error: "Trying to input a non-existing album" });
+      });
+  } else res.status(400).send(error.details[0].message);
+};
+
+song_controller.getActives = (req, res) => {
+  let result = song_model.getActives();
+
+  result
+    .then((songs) => {
+      res.status(200).json(songs);
+    })
+    .catch((err) => {
+      res.status(400).json({ error: err });
+    });
+};
+
+song_controller.getSongById = (req, res) => {
+  let result = song_model.getSongById(req.params.id);
+
+  result
+    .then((song) => {
+      res.status(200).json({ song: song });
+    })
+    .catch((err) => {
+      res.status(400).json({ error: err });
+    });
+};
+
+song_controller.updateSong = (req, res) => {
+  const { value, error } = validateSong(req.body);
+
+  if (!error) {
+    album_model
+      .getAlbumById(value._id_album)
+      .then((album) => {
+        let result = song_model.updateSong(req.params.id, value);
+
+        result
+          .then((song) => {
+            res.status(200).json({ song: song, album: album });
+          })
+          .catch((err) => {
+            res.status(400).json({ error: err });
+          });
+      })
+      .catch((err) => {
+        res.status(400).json({ error: "Trying to input a non-existing album" });
+      });
+  } else res.status(400).send(error.details[0].message);
+};
+
+song_controller.deactivateSong = (req, res) => {
+  let result = song_model.deactivateSong(req.params.id);
+
+  result
+    .then((song) => {
+      res.status(200).json({ song: song });
+    })
+    .catch((err) => {
+      res.status(400).json({ error: err });
+    });
+};
+
+// - - - - - Utility functions - - - - -
+function validateSong(body) {
+  const schema = Joi.object({
+    title: Joi.string().required(),
+    trackNumber: Joi.number().integer().required(),
+    lenght: Joi.number().integer().required(),
+    _id_album: Joi.string().required(),
+    status: Joi.boolean().required().default(true),
+  });
+
+  return schema.validate(body);
 }
 
-async function newSong(req, res) {
-    try {
-        const { title, track, number,length } = req.body;
-        await songsValidator.validateAsync({
-            title,
-            track,
-            number,
-            length
-        });
-
-        const  song = new Song({
-            title,
-            track,
-            number,
-            length,
-            state: true
-        });
-        const result = await  song.save();
-        res.status(202).json({result});
-    } catch (e) {
-        res.status(401).send({ error: e });
-    }
-}
-
-async  function updateSong(req,res){
-    try{
-        const id = req.params.id_song;
-        const { title, track, number,length } = req.body;
-        await songsValidator.validateAsync({
-            title,
-            track,
-            number,
-            length
-        });
-        const  result = await Song.findByIdAndUpdate(id,{
-                title,
-                track,
-                number,
-                length
-            },
-            {new:true}).exec();
-        if(!result) throw  'No se pudo actualizar';
-        res.status(202).json({result});
-    }catch (error){
-        res.status(401).json({error});
-    }
-}
-
-async function deleteSong(req,res){
-    try{
-        const id  = req.params.id_song;
-        const  result = await Song.findByIdAndUpdate(id,{ state: false },
-            {new:true}).exec();
-        if(!result) throw  'No se pudo completar la operacion';
-        res.status(202).json({result});
-
-    }catch (error){
-        res.status(401).json({error});
-    }
-}
-
-
-module.exports = {getAll,newSong,updateSong,deleteSong};
+// - - - - - Controller export - - - - -
+module.exports = song_controller;

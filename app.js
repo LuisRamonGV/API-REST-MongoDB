@@ -1,27 +1,31 @@
+// - - - - - Required modules - - - - -
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+
+// - - - - - Route objects - - - - -
+const singer_route = require("./routes/singer_route");
+const album_route = require("./routes/album_route");
+const song_route = require("./routes/song_route");
+
+// - - - - - Express app object - - - - -
 const app = express();
 
+// - - - - - Middlewares - - - - -
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("tiny"));
 
-const PORT = 3000 || process.env.PORT;
+// - - - - - Routes and requests - - - - -
+app.use("/singer", singer_route);
+app.use("/album", album_route);
+app.use("/song", song_route);
 
-const singers = require("./routes/singers");
-const albums = require('./routes/albums');
-const songs = require('./routes/songs');
+// - - - - - Port listening - - - - -
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`API RUNNING - Listening on port ${PORT}`));
 
-app.use("/api/singers", singers);
-app.use("/api/albums",albums);
-app.use("/api/songs",songs);
-
-app.listen(PORT, (err) => {
-  if (err) console.log(`Error: ${err}`);
-  else console.log(`Application listening in the port ${PORT}`);
-});
-
+// - - - - - Database connection - - - - -
 mongoose.connect('mongodb://127.0.0.1/demo')
         .then(()=> console.log('Conectado a MongoDB'))
         .catch(err => console.log('No se pudo conectar con MongoDB', err));

@@ -1,16 +1,19 @@
-const  express = require ('express');
-const  router = express.Router();
-const albumsController = require('../controllers/albums');
-const {getAll,newAlbum, updateAlbum, deleteAlbum, addSongAlbum, getSongs, deleteSongAlbum} = require("../controllers/albums");
-const {validateAlbumExist} = require("../validations/albumsMD");
-const {validateSongExist} = require("../validations/songsMD");
+// - - - - - Required modules - - - - -
+const express = require("express");
+const route = express.Router();
 
+// - - - - - Controller - - - - -
+const album_controller = require("../controllers/album_controller");
 
-router.get("/",getAll);
-router.post("/",newAlbum);
-router.put("/:id_album",validateAlbumExist,updateAlbum);
-router.delete("/:id_album",validateAlbumExist,deleteAlbum)
-router.post("/addSong/",validateSongExist,validateAlbumExist,addSongAlbum);
-router.get("/getSongs/:id_album",validateAlbumExist,getSongs);
-router.put("/deleteSong/:id_album",validateAlbumExist,deleteSongAlbum);
-module.exports = router;
+// - - - - - Routes and requests - - - - -
+route.get("/", album_controller.getActives);
+route.get("/:id", album_controller.getAlbumById);
+route.get("/songs/:id", album_controller.getAlbumSongs);
+
+route.post("/", album_controller.addAlbum);
+
+route.put("/:id", album_controller.updateAlbum);
+
+route.delete("/:id", album_controller.deactivateAlbum);
+
+module.exports = route;
